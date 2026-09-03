@@ -1,20 +1,6 @@
 import db from '../src/lib/db.js';
+import { fallbackRate as rateFromTo } from '../src/lib/fx.js';
 
-// Fixed approximate rates for seed/demo purposes only. These are not live FX rates.
-// Rates are expressed as 1 USD = X of the given currency (e.g. 1 USD = 12 GHS).
-const USD_TO = { USD: 1, GHS: 12, GBP: 0.79, EUR: 0.92 };
-
-// Multiplying the rate by the amount in the payment currency gives the converted amount in the claim currency. 
-// For example, if a claim is reserved in GHS and a payment is made in USD, the converted amount in GHS is calculated as: 
-// converted_amount_minor = amount_minor * rate_from_USD_to_GHS.
-
-function rateFromTo(fromCurrency, toCurrency) {
-
-  // If the currencies are the same, the rate is 1:1.
-  if (fromCurrency === toCurrency) return 1;
-  // Else, convert using USD as a pivot: rate = (toCurrency per USD) / (fromCurrency per USD)
-  return USD_TO[toCurrency] / USD_TO[fromCurrency];
-}
 
 // Sample claims data for seeding the database.
 const claims = [
@@ -70,7 +56,7 @@ function seed() {
 
     for (const payment of claim.payments) {
 
-      // we always convert the payment to the claim's currency using the fixed FX rates above..
+      // we always convert the payment to the claim's currency using the fixed FX rates from the fallback rates..
       const rate = rateFromTo(payment.currency, claim.currency);
       const converted = Math.round(payment.amount_minor * rate);
 

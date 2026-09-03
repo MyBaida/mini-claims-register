@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAllClaims, getPaymentsForClaim, insertClaim } from '@/lib/data';
 import { summarizeClaim, groupTotalsByCurrency } from '@/lib/claims';
+import { SUPPORTED_CURRENCIES } from '@/lib/currencies';
 
 // GET /api/claims?currency=GHS&status=Reserved...&from=2026-01-01&to=2026-04-01
 export async function GET(request) {
@@ -35,10 +36,18 @@ export async function POST(request) {
     'policy_number', 'insured_name', 'loss_date', 'notified_date',
     'loss_nature', 'currency', 'estimated_loss_minor',
   ];
+
   for (const field of required) {
     if (body[field] === undefined || body[field] === null || body[field] === '') {
       return NextResponse.json({ error: `${field} is required` }, { status: 400 });
     }
+  }
+
+  if (!SUPPORTED_CURRENCIES.includes(body.currency)) {
+    return NextResponse.json(
+      { error: `currency must be one of ${SUPPORTED_CURRENCIES.join(', ')}` },
+      { status: 400 }
+    );
   }
 
   const id = insertClaim(body);

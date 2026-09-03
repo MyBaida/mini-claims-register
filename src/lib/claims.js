@@ -1,5 +1,4 @@
-// Calculation functions here
-// just calculations, so that we can test the money maths in isolation
+// just calculation functions here, so that we can test the money maths in isolation
 
 /*
   Sums the converted amounts of a list of payments.
