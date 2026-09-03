@@ -24,3 +24,12 @@ export function insertClaim(data) {
 export function updateApprovedAmount(id, approvedAmountMinor) {
   db.prepare('UPDATE claims SET approved_amount_minor = ? WHERE id = ?').run(approvedAmountMinor, id);
 }
+
+export function insertPayment(data) {
+  const stmt = db.prepare(`
+    INSERT INTO payments (claim_id, payment_date, currency, amount_minor, fx_rate, converted_amount_minor)
+    VALUES (@claim_id, @payment_date, @currency, @amount_minor, @fx_rate, @converted_amount_minor)
+  `);
+  const result = stmt.run(data);
+  return result.lastInsertRowid;
+}
