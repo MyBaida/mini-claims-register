@@ -125,9 +125,11 @@ export default function ClaimDetailPage() {
 
   if (loading) return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-      <div className="text-center py-16">
-        <div className="inline-block animate-pulse rounded-full h-3 w-24 mb-2" style={{ backgroundColor: 'var(--color-line)' }}></div>
-        <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>Loading claim...</p>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="inline-block animate-pulse rounded-full h-3 w-24 mb-2" style={{ backgroundColor: 'var(--color-line)' }}></div>
+          <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>Loading claim...</p>
+        </div>
       </div>
     </main>
   );
@@ -225,6 +227,7 @@ export default function ClaimDetailPage() {
                 </div>
               </div>
             )}
+            {paymentNote && <p className="text-sm font-medium mt-3" style={{ color: 'var(--color-status-outstanding)' }}>{paymentNote}</p>}
           </section>
         </div>
         {/* Right column — financials + actions */}
@@ -280,7 +283,7 @@ export default function ClaimDetailPage() {
         <form onSubmit={handleAddPayment} className="flex flex-col gap-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Date</label>
-            <input type="date" max={new Date().toISOString().split('T')[0]} value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
+            <input type="date" placeholder="mm/dd/yyyy" max={new Date().toISOString().split('T')[0]} value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Currency</label>
@@ -291,10 +294,9 @@ export default function ClaimDetailPage() {
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Amount</label>
-            <input type="number" step="0.01" value={paymentAmount} onChange={(e) => setPaymentAmount(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
+            <input type="number" step="0.01" placeholder="e.g. 1500.00" value={paymentAmount} onChange={(e) => setPaymentAmount(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
           </div>
           {paymentError && <p className="text-sm font-medium" style={{ color: 'var(--color-error)' }}>{paymentError}</p>}
-          {paymentNote && <p className="text-sm font-medium" style={{ color: 'var(--color-status-paid)' }}>{paymentNote}</p>}
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={() => setPaymentModalOpen(false)} className="px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-black/5 transition-colors" style={{ color: 'var(--color-ink-muted)' }}>Cancel</button>
             <button type="submit" disabled={paymentSaving} className="text-sm px-5 py-2.5 text-white rounded-lg font-medium disabled:opacity-50 shadow-sm hover:shadow-md transition-all" style={{ backgroundColor: 'var(--color-accent)' }}>

@@ -118,11 +118,11 @@ export default function ClaimsListPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
           <div>
             <label className="block mb-1.5 text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--color-ink-muted)' }}>From</label>
-            <input type="date" value={filters.from} onChange={(e) => updateFilter('from', e.target.value)} className={filterInput} style={filterStyle} />
+            <input type="date" placeholder="mm/dd/yyyy" value={filters.from} onChange={(e) => updateFilter('from', e.target.value)} className={filterInput} style={filterStyle} />
           </div>
           <div>
             <label className="block mb-1.5 text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--color-ink-muted)' }}>To</label>
-            <input type="date" value={filters.to} onChange={(e) => updateFilter('to', e.target.value)} className={filterInput} style={filterStyle} />
+            <input type="date" placeholder="mm/dd/yyyy" value={filters.to} onChange={(e) => updateFilter('to', e.target.value)} className={filterInput} style={filterStyle} />
           </div>
           <div>
             <label className="block mb-1.5 text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--color-ink-muted)' }}>Status</label>
@@ -147,9 +147,11 @@ export default function ClaimsListPage() {
       </div>
 
       {loading ? (
-        <div className="text-center py-16">
-          <div className="inline-block animate-pulse rounded-full h-3 w-24 mb-2" style={{ backgroundColor: 'var(--color-line)' }}></div>
-          <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>Loading claims...</p>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <div className="inline-block animate-pulse rounded-full h-3 w-24 mb-2" style={{ backgroundColor: 'var(--color-line)' }}></div>
+            <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>Loading claims...</p>
+          </div>
         </div>
       ) : claims.length === 0 ? (
         <div className="text-center py-16 bg-white/30 rounded-xl border" style={{ borderColor: 'var(--color-line)' }}>

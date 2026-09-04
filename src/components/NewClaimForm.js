@@ -57,20 +57,20 @@ export default function NewClaimForm({ onSuccess, onCancel }) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div>
         <label className={labelClass} style={labelStyle}>Policy number</label>
-        <input type="text" value={form.policy_number} onChange={(e) => update('policy_number', e.target.value)} className={inputClass} style={inputStyle} />
+        <input type="text" placeholder="e.g. POL-1001" value={form.policy_number} onChange={(e) => update('policy_number', e.target.value)} className={inputClass} style={inputStyle} />
       </div>
       <div>
         <label className={labelClass} style={labelStyle}>Insured name</label>
-        <input type="text" value={form.insured_name} onChange={(e) => update('insured_name', e.target.value)} className={inputClass} style={inputStyle} />
+        <input type="text" placeholder="e.g. John Doe" value={form.insured_name} onChange={(e) => update('insured_name', e.target.value)} className={inputClass} style={inputStyle} />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={labelClass} style={labelStyle}>Loss date</label>
-          <input type="date" value={form.loss_date} onChange={(e) => update('loss_date', e.target.value)} className={inputClass} style={inputStyle} />
+          <input type="date" placeholder="mm/dd/yyyy" value={form.loss_date} onChange={(e) => update('loss_date', e.target.value)} className={inputClass} style={inputStyle} />
         </div>
         <div>
           <label className={labelClass} style={labelStyle}>Notified date</label>
-          <input type="date" value={form.notified_date} onChange={(e) => update('notified_date', e.target.value)} className={inputClass} style={inputStyle} />
+          <input type="date" placeholder="mm/dd/yyyy" value={form.notified_date} onChange={(e) => update('notified_date', e.target.value)} className={inputClass} style={inputStyle} />
         </div>
       </div>
       <div>
@@ -87,7 +87,7 @@ export default function NewClaimForm({ onSuccess, onCancel }) {
         </div>
         <div>
           <label className={labelClass} style={labelStyle}>Estimated loss</label>
-          <input type="number" step="0.01" value={form.estimated_loss} onChange={(e) => update('estimated_loss', e.target.value)} className={inputClass} style={inputStyle} />
+          <input type="number" step="0.01" placeholder="e.g. 5000.00" value={form.estimated_loss} onChange={(e) => update('estimated_loss', e.target.value)} className={inputClass} style={inputStyle} />
         </div>
       </div>
 
