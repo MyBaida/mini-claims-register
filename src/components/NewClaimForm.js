@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 const CURRENCIES = ['GHS', 'USD', 'GBP', 'EUR'];
 const EMPTY_FORM = { policy_number: '', insured_name: '', loss_date: '', notified_date: '', loss_nature: '', currency: '', estimated_loss: '' };
-const inputClass = "bg-white/60 border rounded-lg px-3 py-2 w-full focus:outline-none transition-colors";
+const inputClass = "bg-white/60 border rounded-lg px-3 py-2 w-full cursor-pointer focus:outline-none transition-colors";
 const inputStyle = { borderColor: 'var(--color-line)' };
 const labelClass = "block text-xs font-semibold uppercase tracking-wide mb-1.5";
 const labelStyle = { color: 'var(--color-ink-muted)' };
@@ -63,7 +63,7 @@ export default function NewClaimForm({ onSuccess, onCancel }) {
         <label className={labelClass} style={labelStyle}>Insured name</label>
         <input type="text" placeholder="e.g. John Doe" value={form.insured_name} onChange={(e) => update('insured_name', e.target.value)} className={inputClass} style={inputStyle} />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className={labelClass} style={labelStyle}>Loss date</label>
           <input type="date" placeholder="mm/dd/yyyy" value={form.loss_date} onChange={(e) => update('loss_date', e.target.value)} className={inputClass} style={inputStyle} />
@@ -97,9 +97,16 @@ export default function NewClaimForm({ onSuccess, onCancel }) {
         </div>
       )}
 
-      <div className="flex justify-end gap-3 pt-2">
+      <div className="flex flex-wrap justify-between gap-3 pt-2">
         <button type="button" onClick={onCancel} className="px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-black/5 transition-colors" style={{ color: 'var(--color-ink-muted)' }}>Cancel</button>
-        <button type="submit" disabled={saving} className="px-5 py-2.5 text-sm text-white rounded-lg font-medium disabled:opacity-50 shadow-sm hover:shadow-md transition-all" style={{ backgroundColor: 'var(--color-accent)' }}>
+        <button
+          type="submit"
+          disabled={saving}
+          className="px-5 py-2.5 text-sm text-white rounded-lg font-medium disabled:opacity-50 shadow-sm hover:shadow-md transition-all cursor-pointer"
+          style={{ backgroundColor: 'var(--color-accent)' }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-accent)')}
+        >
           {saving ? 'Registering...' : 'Register claim'}
         </button>
       </div>

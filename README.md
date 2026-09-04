@@ -66,6 +66,7 @@ Whichever rate was used is stored permanently on that payment record, alongside 
 - Cache the live FX rate briefly (e.g. for an hour) rather than calling out on every single payment, to reduce external dependency load if payment volume grew.
 - Add authentication and role-based access control — e.g. only certain roles able to set an approved amount, with every claim/payment action attributed to whoever performed it (which would also make the approved-amount revision history mentioned above meaningful, since you'd know *who* changed it).
 - Add input masking/formatting for numeric fields (e.g. thousand separators while typing).
+- Address the blank state of `<input type="date">` on mobile browsers (iOS Safari in particular renders date inputs as completely empty until a date is selected, regardless of the `placeholder` attribute — a custom date picker component or a JS polyfill would be needed to show a visible hint).
 
 ## Testing checklist
 

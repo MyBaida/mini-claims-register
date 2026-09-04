@@ -215,7 +215,7 @@ export default function ClaimsListPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-1.5 rounded-md border text-sm disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 rounded-md border text-sm cursor-pointer hover:bg-black/[0.04] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
                 style={{ borderColor: 'var(--color-line)', color: 'var(--color-accent)' }}
               >
                 ← Prev
@@ -226,7 +226,7 @@ export default function ClaimsListPage() {
               <button
                 onClick={() => setPage((p) => (p * pageSize < totalCount ? p + 1 : p))}
                 disabled={page * pageSize >= totalCount}
-                className="px-3 py-1.5 rounded-md border text-sm disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 rounded-md border text-sm cursor-pointer hover:bg-black/[0.04] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
                 style={{ borderColor: 'var(--color-line)', color: 'var(--color-accent)' }}
               >
                 Next →

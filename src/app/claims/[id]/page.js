@@ -190,7 +190,7 @@ export default function ClaimDetailPage() {
               <h2 className="font-serif-display text-lg">
                 Payment history{payments.length > 0 && <span className="ml-1.5 text-sm font-bold" style={{ color: 'var(--color-accent)' }}>({payments.length})</span>}
               </h2>
-              <button onClick={() => setPaymentModalOpen(true)} className="text-sm font-bold cursor-pointer" style={{ color: 'var(--color-accent)' }}>+ Add Payment</button>
+              <button onClick={() => setPaymentModalOpen(true)} className="text-sm font-bold cursor-pointer hover:underline transition-colors" style={{ color: 'var(--color-accent)' }}>+ Add Payment</button>
             </div>
             {payments.length === 0 ? (
               <div className="text-center py-10 bg-white/30 rounded-xl border" style={{ borderColor: 'var(--color-line)' }}>
@@ -283,23 +283,30 @@ export default function ClaimDetailPage() {
         <form onSubmit={handleAddPayment} className="flex flex-col gap-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Date</label>
-            <input type="date" placeholder="mm/dd/yyyy" max={new Date().toISOString().split('T')[0]} value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
+            <input type="date" placeholder="mm/dd/yyyy" max={new Date().toISOString().split('T')[0]} value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full cursor-pointer focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Currency</label>
-            <select value={paymentCurrency} onChange={(e) => setPaymentCurrency(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }}>
+            <select value={paymentCurrency} onChange={(e) => setPaymentCurrency(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full cursor-pointer focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }}>
               <option value="">Select</option>
               {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Amount</label>
-            <input type="number" step="0.01" placeholder="e.g. 1500.00" value={paymentAmount} onChange={(e) => setPaymentAmount(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
+            <input type="number" step="0.01" placeholder="e.g. 1500.00" value={paymentAmount} onChange={(e) => setPaymentAmount(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full cursor-pointer focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
           </div>
           {paymentError && <p className="text-sm font-medium" style={{ color: 'var(--color-error)' }}>{paymentError}</p>}
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex flex-wrap justify-between gap-3 pt-2">
             <button type="button" onClick={() => setPaymentModalOpen(false)} className="px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-black/5 transition-colors" style={{ color: 'var(--color-ink-muted)' }}>Cancel</button>
-            <button type="submit" disabled={paymentSaving} className="text-sm px-5 py-2.5 text-white rounded-lg font-medium disabled:opacity-50 shadow-sm hover:shadow-md transition-all" style={{ backgroundColor: 'var(--color-accent)' }}>
+            <button
+              type="submit"
+              disabled={paymentSaving}
+              className="text-sm px-5 py-2.5 text-white rounded-lg font-medium disabled:opacity-50 shadow-sm hover:shadow-md transition-all cursor-pointer"
+              style={{ backgroundColor: 'var(--color-accent)' }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-accent)')}
+            >
               {paymentSaving ? 'Saving...' : 'Add payment'}
             </button>
           </div>
