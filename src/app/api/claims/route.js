@@ -24,8 +24,14 @@ export async function GET(request) {
   if (to) summarized = summarized.filter((c) => c.loss_date <= to);
 
   const totals = groupTotalsByCurrency(summarized);
+  const totalCount = summarized.length;
 
-  return NextResponse.json({ claims: summarized, totals });
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
+  const start = (page - 1) * pageSize;
+  const paginated = summarized.slice(start, start + pageSize);
+
+  return NextResponse.json({ claims: paginated, totals, totalCount, page, pageSize });
 }
 
 // POST /api/claims — register a new claim

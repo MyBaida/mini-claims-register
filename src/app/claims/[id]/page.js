@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { statusDotClass, statusBadgeStyle, statusLabel } from '@/lib/statusStyles';
+import Modal from '@/components/Modal';
 
 const CURRENCIES = ['GHS', 'USD', 'GBP', 'EUR'];
 
@@ -28,6 +30,7 @@ export default function ClaimDetailPage() {
   const [paymentSaving, setPaymentSaving] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const [paymentNote, setPaymentNote] = useState('');
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
   const loadClaim = useCallback(() => {
     fetch(`/api/claims/${id}`)
@@ -35,6 +38,9 @@ export default function ClaimDetailPage() {
       .then((data) => {
         setClaim(data.claim);
         setPayments(data.payments);
+        if (data.claim.approved_amount_minor != null) {
+          setApprovedInput((data.claim.approved_amount_minor / 100).toString());
+        }
         setLoading(false);
       });
   }, [id]);
@@ -113,132 +119,190 @@ export default function ClaimDetailPage() {
     setPaymentDate('');
     setPaymentCurrency('');
     setPaymentAmount('');
+    setPaymentModalOpen(false);
     loadClaim();
   }
 
-  if (loading) return <main className="max-w-3xl mx-auto p-6">Loading...</main>;
-  if (!claim) return <main className="max-w-3xl mx-auto p-6">Claim not found.</main>;
+  if (loading) return (
+    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+      <div className="text-center py-16">
+        <div className="inline-block animate-pulse rounded-full h-3 w-24 mb-2" style={{ backgroundColor: 'var(--color-line)' }}></div>
+        <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>Loading claim...</p>
+      </div>
+    </main>
+  );
+  if (!claim) return (
+    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+      <div className="text-center py-16 bg-white/30 rounded-xl border" style={{ borderColor: 'var(--color-line)' }}>
+        <p className="text-base font-medium mb-1" style={{ color: 'var(--color-ink)' }}>Claim not found</p>
+        <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>The claim you&apos;re looking for doesn&apos;t exist.</p>
+      </div>
+    </main>
+  );
 
   return (
-    <main className="max-w-3xl mx-auto p-6">
-      <Link href="/" className="text-blue-600 hover:underline text-sm">&larr; Back to list</Link>
+    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+      <Link href="/" className="inline-flex items-center text-sm font-medium hover:underline transition-colors" style={{ color: 'var(--color-accent)' }}>
+        <span className="mr-1">&larr;</span> Back to list
+      </Link>
 
-      <h1 className="text-2xl font-semibold mt-2 mb-1">{claim.policy_number} — {claim.insured_name}</h1>
-      <p className="text-gray-600 mb-6">{claim.loss_nature} · Loss date {claim.loss_date} · Notified {claim.notified_date}</p>
+      {/* Header */}
+      <div className="mt-5 mb-8">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="inline-flex items-center gap-1.5 text-sm font-medium px-2.5 py-0.5 rounded-full" style={statusBadgeStyle(claim.status)}>
+            <span className={statusDotClass(claim.status)} style={{ marginRight: 0 }}></span>
+            {statusLabel(claim.status)}
+          </span>
+        </div>
+        <h1 className="font-serif-display text-3xl sm:text-4xl tracking-tight mb-1">{claim.insured_name}</h1>
+        <p className="text-sm font-bold" style={{ color: 'var(--color-ink-muted)' }}>Policy {claim.policy_number}</p>
+      </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 bg-gray-50 p-4 rounded">
-        <div>
-          <div className="text-sm text-gray-500">Currency</div>
-          <div className="font-semibold">{claim.currency}</div>
+      {/* Two-column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+
+        {/* Left column — claim info + payment history */}
+        <div className="lg:col-span-3 flex flex-col gap-8">
+          {/* Claim details */}
+          <div className="bg-white/50 rounded-xl border p-5 sm:p-6" style={{ borderColor: 'var(--color-line)' }}>
+            <h2 className="text-xs font-bold uppercase tracking-wide mb-4" style={{ color: 'var(--color-ink-muted)' }}>Claim details</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 text-sm">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Loss nature</div>
+                <div className="font-medium">{claim.loss_nature}</div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Loss date</div>
+                <div className="font-mono-figures">{claim.loss_date}</div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Notified</div>
+                <div className="font-mono-figures">{claim.notified_date}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment history */}
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-serif-display text-lg">
+                Payment history{payments.length > 0 && <span className="ml-1.5 text-sm font-bold" style={{ color: 'var(--color-accent)' }}>({payments.length})</span>}
+              </h2>
+              <button onClick={() => setPaymentModalOpen(true)} className="text-sm font-bold cursor-pointer" style={{ color: 'var(--color-accent)' }}>+ Add Payment</button>
+            </div>
+            {payments.length === 0 ? (
+              <div className="text-center py-10 bg-white/30 rounded-xl border" style={{ borderColor: 'var(--color-line)' }}>
+                <p className="text-base font-medium mb-1" style={{ color: 'var(--color-ink)' }}>No payments yet</p>
+                <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>Payments will appear here once recorded.</p>
+              </div>
+            ) : (
+              <div className="bg-white/50 rounded-xl border overflow-hidden" style={{ borderColor: 'var(--color-line)' }}>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr style={{ backgroundColor: 'rgba(0,0,0,0.02)' }}>
+                        <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Date</th>
+                        <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Ccy</th>
+                        <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Amount</th>
+                        <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Rate</th>
+                        <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Converted</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {payments.map((p) => (
+                        <tr key={p.id} className="border-t transition-colors" style={{ borderColor: 'var(--color-line)' }}>
+                          <td className="py-3 px-4 font-mono-figures">{p.payment_date}</td>
+                          <td className="py-3 px-4">
+                            <span className="inline-block text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(15, 146, 103, 0.08)', color: 'var(--color-accent)' }}>{p.currency}</span>
+                          </td>
+                          <td className="py-3 px-4 text-center font-mono-figures">{formatMinor(p.amount_minor)}</td>
+                          <td className="py-3 px-4 text-center font-mono-figures">{p.fx_rate}</td>
+                          <td className="py-3 px-4 text-center font-mono-figures font-medium">{formatMinor(p.converted_amount_minor)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </section>
         </div>
-        <div>
-          <div className="text-sm text-gray-500">Approved</div>
-          <div className="font-semibold">{formatMinor(claim.approved_amount_minor)}</div>
-        </div>
-        <div>
-          <div className="text-sm text-gray-500">Paid</div>
-          <div className="font-semibold">{formatMinor(claim.totalPaidMinor)}</div>
-        </div>
-        <div>
-          <div className="text-sm text-gray-500">Balance</div>
-          <div className="font-semibold">{formatMinor(claim.balanceMinor)}</div>
-        </div>
-        <div className="col-span-2 sm:col-span-4">
-          <div className="text-sm text-gray-500">Status</div>
-          <div className="font-semibold">{claim.status}</div>
+        {/* Right column — financials + actions */}
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          {/* Financial summary */}
+          <div className="bg-white/50 rounded-xl border p-5" style={{ borderColor: 'var(--color-line)' }}>
+            <h2 className="text-xs font-semibold uppercase tracking-wide mb-4" style={{ color: 'var(--color-ink-muted)' }}>Financial summary</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Currency</div>
+                <div className="font-mono-figures text-lg font-medium">{claim.currency}</div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Approved</div>
+                <div className="font-mono-figures text-lg font-medium">{formatMinor(claim.approved_amount_minor)}</div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Paid</div>
+                <div className="font-mono-figures text-lg" style={{ color: 'var(--color-status-paid)' }}>{formatMinor(claim.totalPaidMinor)}</div>
+              </div>
+              <div className="rounded-lg p-3 -m-1" style={{ backgroundColor: claim.balanceMinor > 0 ? 'rgba(217, 119, 6, 0.06)' : 'rgba(15, 146, 103, 0.06)' }}>
+                <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: claim.balanceMinor > 0 ? 'var(--color-status-outstanding)' : 'var(--color-status-paid)' }}>Balance</div>
+                <div className="font-mono-figures text-lg font-bold" style={{ color: claim.balanceMinor > 0 ? 'var(--color-status-outstanding)' : 'var(--color-status-paid)' }}>{formatMinor(claim.balanceMinor)}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Set approved amount */}
+          <section className="bg-white/50 rounded-xl border p-5" style={{ borderColor: 'var(--color-line)' }}>
+            <h2 className="text-xs font-semibold uppercase tracking-wide mb-4" style={{ color: 'var(--color-ink-muted)' }}>{claim.approved_amount_minor != null ? 'Update approved amount' : 'Set approved amount'}</h2>
+            <form onSubmit={handleSetApproved} className="flex gap-3 items-end">
+              <div className="flex-1">
+                <label className="block text-xs mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Amount in {claim.currency}</label>
+                <input type="number" step="0.01" value={approvedInput} onChange={(e) => setApprovedInput(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
+              </div>
+              <button
+                type="submit"
+                disabled={approvedSaving}
+                className="text-sm px-4 py-2 text-white rounded-lg font-medium disabled:opacity-50 shadow-sm hover:shadow-md transition-all"
+                style={{ backgroundColor: 'var(--color-accent)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-accent)')}
+              >
+                {approvedSaving ? 'Saving...' : 'Save'}
+              </button>
+            </form>
+            {approvedError && <p className="text-sm mt-3 font-medium" style={{ color: 'var(--color-error)' }}>{approvedError}</p>}
+          </section>
         </div>
       </div>
 
-      <section className="mb-8">
-        <h2 className="text-lg font-semibold mb-2">Set / update approved amount</h2>
-        <form onSubmit={handleSetApproved} className="flex gap-2 items-start">
-          <input
-            type="number"
-            step="0.01"
-            placeholder={`Amount in ${claim.currency}`}
-            value={approvedInput}
-            onChange={(e) => setApprovedInput(e.target.value)}
-            className="border rounded px-2 py-1 flex-1"
-          />
-          <button
-            type="submit"
-            disabled={approvedSaving}
-            className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 disabled:opacity-50"
-          >
-            {approvedSaving ? 'Saving...' : 'Save'}
-          </button>
+      <Modal open={paymentModalOpen} onClose={() => setPaymentModalOpen(false)} title="Record a payment">
+        <form onSubmit={handleAddPayment} className="flex flex-col gap-4">
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Date</label>
+            <input type="date" max={new Date().toISOString().split('T')[0]} value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Currency</label>
+            <select value={paymentCurrency} onChange={(e) => setPaymentCurrency(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }}>
+              <option value="">Select</option>
+              {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Amount</label>
+            <input type="number" step="0.01" value={paymentAmount} onChange={(e) => setPaymentAmount(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
+          </div>
+          {paymentError && <p className="text-sm font-medium" style={{ color: 'var(--color-error)' }}>{paymentError}</p>}
+          {paymentNote && <p className="text-sm font-medium" style={{ color: 'var(--color-status-paid)' }}>{paymentNote}</p>}
+          <div className="flex justify-end gap-3 pt-2">
+            <button type="button" onClick={() => setPaymentModalOpen(false)} className="px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-black/5 transition-colors" style={{ color: 'var(--color-ink-muted)' }}>Cancel</button>
+            <button type="submit" disabled={paymentSaving} className="text-sm px-5 py-2.5 text-white rounded-lg font-medium disabled:opacity-50 shadow-sm hover:shadow-md transition-all" style={{ backgroundColor: 'var(--color-accent)' }}>
+              {paymentSaving ? 'Saving...' : 'Add payment'}
+            </button>
+          </div>
         </form>
-        {approvedError && <p className="text-red-600 text-sm mt-1">{approvedError}</p>}
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-lg font-semibold mb-2">Record a payment</h2>
-        <form onSubmit={handleAddPayment} className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-start">
-          <input
-            type="date"
-            value={paymentDate}
-            onChange={(e) => setPaymentDate(e.target.value)}
-            className="border rounded px-2 py-1"
-          />
-          <select
-            value={paymentCurrency}
-            onChange={(e) => setPaymentCurrency(e.target.value)}
-            className="border rounded px-2 py-1"
-          >
-            <option value="">Currency</option>
-            {CURRENCIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-          <input
-            type="number"
-            step="0.01"
-            placeholder="Amount"
-            value={paymentAmount}
-            onChange={(e) => setPaymentAmount(e.target.value)}
-            className="border rounded px-2 py-1"
-          />
-          <button
-            type="submit"
-            disabled={paymentSaving}
-            className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 disabled:opacity-50"
-          >
-            {paymentSaving ? 'Saving...' : 'Add payment'}
-          </button>
-        </form>
-        {paymentError && <p className="text-red-600 text-sm mt-1">{paymentError}</p>}
-        {paymentNote && <p className="text-green-700 text-sm mt-1">{paymentNote}</p>}
-      </section>
-
-      <section>
-        <h2 className="text-lg font-semibold mb-2">Payment history</h2>
-        {payments.length === 0 ? (
-          <p className="text-gray-500 text-sm">No payments recorded yet.</p>
-        ) : (
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b bg-gray-100 text-left">
-                <th className="p-2">Date</th>
-                <th className="p-2">Currency</th>
-                <th className="p-2 text-right">Amount</th>
-                <th className="p-2 text-right">Rate</th>
-                <th className="p-2 text-right">Converted ({claim.currency})</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payments.map((p) => (
-                <tr key={p.id} className="border-b">
-                  <td className="p-2">{p.payment_date}</td>
-                  <td className="p-2">{p.currency}</td>
-                  <td className="p-2 text-right">{formatMinor(p.amount_minor)}</td>
-                  <td className="p-2 text-right">{p.fx_rate}</td>
-                  <td className="p-2 text-right">{formatMinor(p.converted_amount_minor)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </section>
+      </Modal>
     </main>
   );
 }
