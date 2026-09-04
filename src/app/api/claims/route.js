@@ -56,6 +56,11 @@ export async function POST(request) {
     );
   }
 
+  const estimated = Number(body.estimated_loss_minor);
+  if (!Number.isFinite(estimated) || estimated < 0) {
+    return NextResponse.json({ error: 'estimated_loss_minor must be a non-negative number' }, { status: 400 });
+  }
+
   const id = insertClaim(body);
   return NextResponse.json({ id }, { status: 201 });
 }

@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Mini Claims Register
 
-## Getting Started
+A small web app for registering insurance claims and recording payments against them, built for the Phrontlyne Technologies pre-employment exercise.
 
-First, run the development server:
+**Live app:** https://mini-claims-register-6mtv.onrender.com/
+*(Free-tier hosting — the first load after a period of inactivity may take 20–30 seconds while the service wakes up.)*
+
+## Stack
+
+- **Next.js** (App Router) — both the frontend pages and the backend API routes live in one project.
+- **SQLite** (via `better-sqlite3`) — a single-file database, no separate server to run.
+- **Tailwind CSS** — styling.
+- Hosted on **Render** (free web service).
+
+## Running it locally
 
 ```bash
+git clone https://github.com/MyBaida/mini-claims-register.git
+cd mini-claims-register
+npm install
+npm run db:init
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open `http://localhost:3000`. The seed script loads 16 sample claims covering every status, all four supported currencies, and an off-currency payment scenario.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+To run the unit tests for the balance/status/currency logic:
+```bash
+npm test
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Data model
 
-## Learn More
+**claims** — policy number, insured name, loss date, notified date, loss nature, currency, estimated loss, and an optional approved amount (`NULL` until someone approves a figure — this is what drives the "Reserved" status).
 
-To learn more about Next.js, take a look at the following resources:
+**payments** — belongs to a claim; its own date, currency, and amount, plus the FX rate used and the resulting amount converted into the claim's currency.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Balance and status are never stored — they're always calculated live from `approved_amount_minor` and the sum of payments, so they can never drift out of sync with reality. All money is stored as integer minor units (cents) to avoid floating-point rounding errors, and only converted to a decimal for display, right at the point it's shown on screen.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Handling a payment in a different currency than the claim
 
-## Deploy on Vercel
+A claim is reserved in one currency. A payment can be made in a different one. When that happens, the server (never the person entering the payment) determines the conversion rate:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Same currency as the claim → rate is `1`, no conversion needed.
+2. Different currency → the server tries a live exchange rate API first.
+3. If that's unreachable, it falls back to a small fixed rate table.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Whichever rate was used is stored permanently on that payment record, alongside the payment's original, untouched currency and amount. This means a claim's balance is always calculated in one consistent currency, and a historical payment's converted value never silently changes if rates move later.
+
+## Assumptions made
+
+- **No authentication or access control.** The brief asks for a live URL reviewable without any setup — anyone with the link can view and edit data. Appropriate for this exercise; not appropriate for a real deployment.
+- **No delete functionality anywhere.** Claims and payments are treated as an audit trail, consistent with how real financial/insurance records are handled — only creates and the one necessary update (setting/revising the approved amount) are supported.
+- **The approved amount can be updated at any time**, including after a claim is already fully paid — this reflects real claims handling, where an approved figure is often revised. There's no history kept of previous approved amounts (see below).
+- **Overpayment is allowed.** If total paid exceeds the approved amount, the balance goes negative and the status is still "Settled and paid" rather than blocking the payment.
+- **Only four currencies are supported** (GHS, USD, GBP, EUR), matching the seed data and keeping the supported-currency list small and explicit.
+- **`policy_number` is a plain text field**, not a foreign key to a separate policies table — out of scope for what was asked.
+- **The database resets to seed data whenever the free-tier host spins the service down and back up** (Render's free tier has an ephemeral filesystem — persistent disks require a paid plan). This is acceptable for a demo/review context; see "what I'd do differently" below for the production fix.
+
+## What I'd do differently with more time
+
+- Move off SQLite onto a real managed database (e.g. Render's free Postgres) so data survives independently of the web service's own lifecycle, instead of resetting on sleep/wake.
+- Keep a history of approved-amount revisions (who/when/from what to what) rather than overwriting the figure with no record of the previous value.
+- Model `policy_number` as a proper foreign key to a `policies` table, so one policy can be linked to multiple claims over its life.
+- Cache the live FX rate briefly (e.g. for an hour) rather than calling out on every single payment, to reduce external dependency load if payment volume grew.
+- Add authentication and role-based access control — e.g. only certain roles able to set an approved amount, with every claim/payment action attributed to whoever performed it (which would also make the approved-amount revision history mentioned above meaningful, since you'd know *who* changed it).
+- Add input masking/formatting for numeric fields (e.g. thousand separators while typing).
+
+## Testing checklist
+
+Manually verified: creating a claim, setting/updating an approved amount, recording a same-currency payment, recording an off-currency payment (rate applied and shown), filtering the list by date range/status/currency, totals row correctness per currency (including with pagination applied), and overpayment producing a negative balance with "Settled and paid" status.

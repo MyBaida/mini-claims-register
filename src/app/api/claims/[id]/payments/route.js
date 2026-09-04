@@ -23,6 +23,11 @@ export async function POST(request, { params }) {
     );
   }
 
+  const amount = Number(body.amount_minor);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return NextResponse.json({ error: 'amount_minor must be a positive number' }, { status: 400 });
+  }
+
   const claim = getClaimById(id);
   if (!claim) {
     return NextResponse.json({ error: 'Claim not found' }, { status: 404 });

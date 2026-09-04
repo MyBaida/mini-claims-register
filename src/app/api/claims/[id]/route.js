@@ -25,6 +25,11 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ error: 'approved_amount_minor is required' }, { status: 400 });
   }
 
+  const approved = Number(body.approved_amount_minor);
+  if (!Number.isFinite(approved) || approved < 0) {
+    return NextResponse.json({ error: 'approved_amount_minor must be a non-negative number' }, { status: 400 });
+  }
+
   const claim = getClaimById(id);
   if (!claim) {
     return NextResponse.json({ error: 'Claim not found' }, { status: 404 });
