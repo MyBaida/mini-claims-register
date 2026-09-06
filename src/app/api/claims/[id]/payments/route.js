@@ -33,6 +33,14 @@ export async function POST(request, { params }) {
     return NextResponse.json({ error: 'Claim not found' }, { status: 404 });
   }
 
+  const today = new Date().toISOString().split('T')[0];
+  if (body.payment_date > today) {
+    return NextResponse.json({ error: 'payment_date cannot be in the future' }, { status: 400 });
+  }
+  if (body.payment_date < claim.notified_date) {
+    return NextResponse.json({ error: 'payment_date cannot be before the claim notified date' }, { status: 400 });
+  }
+
   // Tries a live FX rate first, falls back to a fixed table if unavailable.
   const { rate, source } = await getExchangeRate(body.currency, claim.currency);
   const convertedAmountMinor = convertMinor(body.amount_minor, rate);

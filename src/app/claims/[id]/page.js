@@ -13,6 +13,13 @@ function formatMinor(minor) {
   return (minor / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const [year, month, day] = dateStr.split('-');
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${day} ${months[parseInt(month, 10) - 1]} ${year}`;
+}
+
 export default function ClaimDetailPage() {
   const { id } = useParams();
 
@@ -173,11 +180,11 @@ export default function ClaimDetailPage() {
             </div>
             <div>
               <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Loss date</div>
-              <div className="font-mono-figures">{claim.loss_date}</div>
+              <div className="font-mono-figures">{formatDate(claim.loss_date)}</div>
             </div>
             <div>
-              <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Notified</div>
-              <div className="font-mono-figures">{claim.notified_date}</div>
+              <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Notified on</div>
+              <div className="font-mono-figures">{formatDate(claim.notified_date)}</div>
             </div>
           </div>
         </div>
@@ -260,7 +267,7 @@ export default function ClaimDetailPage() {
                   <tbody>
                     {payments.map((p) => (
                       <tr key={p.id} className="border-t transition-colors" style={{ borderColor: 'var(--color-line)' }}>
-                        <td className="py-3 px-4 font-mono-figures">{p.payment_date}</td>
+                        <td className="py-3 px-4 font-mono-figures">{formatDate(p.payment_date)}</td>
                         <td className="py-3 px-4">
                           <span className="inline-block text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(15, 146, 103, 0.08)', color: 'var(--color-accent)' }}>{p.currency}</span>
                         </td>
@@ -282,7 +289,7 @@ export default function ClaimDetailPage() {
         <form onSubmit={handleAddPayment} className="flex flex-col gap-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Date</label>
-            <input type="date" placeholder="mm/dd/yyyy" max={new Date().toISOString().split('T')[0]} value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full cursor-pointer focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
+            <input type="date" placeholder="mm/dd/yyyy" min={claim.notified_date} max={new Date().toISOString().split('T')[0]} value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full cursor-pointer focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
             <span className="block text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Pick a date</span>
           </div>
           <div>

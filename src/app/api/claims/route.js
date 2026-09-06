@@ -61,6 +61,17 @@ export async function POST(request) {
     return NextResponse.json({ error: 'estimated_loss_minor must be a non-negative number' }, { status: 400 });
   }
 
+  const today = new Date().toISOString().split('T')[0];
+  if (body.loss_date > today) {
+    return NextResponse.json({ error: 'loss_date cannot be in the future' }, { status: 400 });
+  }
+  if (body.notified_date > today) {
+    return NextResponse.json({ error: 'notified_date cannot be in the future' }, { status: 400 });
+  }
+  if (body.notified_date < body.loss_date) {
+    return NextResponse.json({ error: 'notified_date cannot be before loss_date' }, { status: 400 });
+  }
+
   const id = insertClaim(body);
   return NextResponse.json({ id }, { status: 201 });
 }

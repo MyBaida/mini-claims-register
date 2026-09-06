@@ -66,12 +66,12 @@ export default function NewClaimForm({ onSuccess, onCancel }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className={labelClass} style={labelStyle}>Loss date</label>
-          <input type="date" placeholder="mm/dd/yyyy" value={form.loss_date} onChange={(e) => update('loss_date', e.target.value)} className={inputClass} style={inputStyle} />
+          <input type="date" placeholder="mm/dd/yyyy" max={new Date().toISOString().split('T')[0]} value={form.loss_date} onChange={(e) => update('loss_date', e.target.value)} className={inputClass} style={inputStyle} />
           <span className="block text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Pick a date</span>
         </div>
         <div>
           <label className={labelClass} style={labelStyle}>Notified date</label>
-          <input type="date" placeholder="mm/dd/yyyy" value={form.notified_date} onChange={(e) => update('notified_date', e.target.value)} className={inputClass} style={inputStyle} />
+          <input type="date" placeholder="mm/dd/yyyy" min={form.loss_date || undefined} max={new Date().toISOString().split('T')[0]} value={form.notified_date} onChange={(e) => update('notified_date', e.target.value)} className={inputClass} style={inputStyle} />
           <span className="block text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Pick a date</span>
         </div>
       </div>

@@ -56,6 +56,7 @@ Whichever rate was used is stored permanently on that payment record, alongside 
 - **Overpayment is allowed.** If total paid exceeds the approved amount, the balance goes negative and the status is still "Settled and paid" rather than blocking the payment.
 - **Only four currencies are supported** (GHS, USD, GBP, EUR), matching the seed data and keeping the supported-currency list small and explicit.
 - **`policy_number` is a plain text field**, not a foreign key to a separate policies table — out of scope for what was asked.
+- **Date constraints are enforced on both frontend and backend.** Loss date and notified date cannot be in the future, notified date cannot precede loss date, and payment dates must fall between the claim's notified date and today.
 - **The database resets to seed data whenever the free-tier host spins the service down and back up** (Render's free tier has an ephemeral filesystem — persistent disks require a paid plan). This is acceptable for a demo/review context; see "what I'd do differently" below for the production fix.
 
 ## What I'd do differently with more time
@@ -66,6 +67,7 @@ Whichever rate was used is stored permanently on that payment record, alongside 
 - Cache the live FX rate briefly (e.g. for an hour) rather than calling out on every single payment, to reduce external dependency load if payment volume grew.
 - Add authentication and role-based access control — e.g. only certain roles able to set an approved amount, with every claim/payment action attributed to whoever performed it (which would also make the approved-amount revision history mentioned above meaningful, since you'd know *who* changed it).
 - Add input masking/formatting for numeric fields (e.g. thousand separators while typing).
+- Add payment editing — with a clear policy on whether the FX rate should be re-fetched at current rates or preserved from the original transaction, and an audit trail for any changes.
 - Address the blank state of `<input type="date">` on mobile browsers (iOS Safari in particular renders date inputs as completely empty until a date is selected, regardless of the `placeholder` attribute — a custom date picker component or a JS polyfill would be needed to show a visible hint).
 
 ## Testing checklist

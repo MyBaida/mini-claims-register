@@ -14,6 +14,13 @@ function formatMinor(minor) {
   return (minor / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const [year, month, day] = dateStr.split('-');
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${day} ${months[parseInt(month, 10) - 1]} ${year}`;
+}
+
 export default function ClaimsListPage() {
   const router = useRouter();
   const [claims, setClaims] = useState([]);
@@ -187,7 +194,7 @@ export default function ClaimsListPage() {
                       <span className="font-bold group-hover:underline" style={{ color: 'var(--color-accent)' }}>{claim.policy_number}</span>
                     </td>
                     <td className="py-3 px-4">{claim.insured_name}</td>
-                    <td className="py-3 px-4 font-mono-figures hidden sm:table-cell">{claim.loss_date}</td>
+                    <td className="py-3 px-4 font-mono-figures hidden sm:table-cell">{formatDate(claim.loss_date)}</td>
                     <td className="py-3 px-4 text-center">
                       <span className="inline-block text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(15, 146, 103, 0.08)', color: 'var(--color-accent)' }}>{claim.currency}</span>
                     </td>
