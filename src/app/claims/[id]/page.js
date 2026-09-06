@@ -184,7 +184,7 @@ export default function ClaimDetailPage() {
 
         {/* Financial summary */}
         <div className="order-2 lg:col-span-2 lg:col-start-4 bg-white/50 rounded-xl border p-5" style={{ borderColor: 'var(--color-line)' }}>
-            <h2 className="text-xs font-semibold uppercase tracking-wide mb-4" style={{ color: 'var(--color-ink-muted)' }}>Financial summary</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wide mb-4" style={{ color: 'var(--color-ink-muted)' }}>Financial summary</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Est. loss</div>
@@ -211,10 +211,10 @@ export default function ClaimDetailPage() {
 
         {/* Set approved amount */}
         <section className="order-3 lg:col-span-2 lg:col-start-4 bg-white/50 rounded-xl border p-5" style={{ borderColor: 'var(--color-line)' }}>
-            <h2 className="text-xs font-semibold uppercase tracking-wide mb-4" style={{ color: 'var(--color-ink-muted)' }}>{claim.approved_amount_minor != null ? 'Update approved amount' : 'Set approved amount'}</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wide mb-4" style={{ color: 'var(--color-ink-muted)' }}>{claim.approved_amount_minor != null ? 'Update approved amount' : 'Set approved amount'}</h2>
             <form onSubmit={handleSetApproved} className="flex gap-3 items-end">
               <div className="flex-1">
-                <label className="block text-xs mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Amount in {claim.currency}</label>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Amount in {claim.currency}</label>
                 <input type="number" step="0.01" value={approvedInput} onChange={(e) => setApprovedInput(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
               </div>
               <button

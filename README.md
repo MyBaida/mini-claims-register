@@ -25,7 +25,7 @@ npm run dev
 
 Then open `http://localhost:3000`. The seed script loads 16 sample claims covering every status, all four supported currencies, and an off-currency payment scenario.
 
-To run the unit tests for the balance/status/currency logic:
+To run the test suite (34 tests covering claim calculations, FX conversion logic, and data-access layer queries against an in-memory SQLite database):
 ```bash
 npm test
 ```
