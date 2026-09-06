@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getClaimById, getPaymentsForClaim, insertPayment } from '@/lib/data';
+import { getClaimById, getPaymentsForClaim, insertPayment } from '@/lib/queries';
 import { convertMinor } from '@/lib/claims';
 import { getExchangeRate } from '@/lib/fx';
 import { SUPPORTED_CURRENCIES } from '@/lib/currencies';

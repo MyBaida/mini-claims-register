@@ -7,7 +7,7 @@ import {
   convertMinor,
   groupTotalsByCurrency,
   summarizeClaim,
-} from './claims.js';
+} from '../claims.js';
 
 test('totalPaidMinor sums converted amounts', () => {
   const payments = [{ converted_amount_minor: 1000 }, { converted_amount_minor: 500 }];

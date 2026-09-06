@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getClaimById, getPaymentsForClaim, updateApprovedAmount } from '@/lib/data';
+import { getClaimById, getPaymentsForClaim, updateApprovedAmount } from '@/lib/queries';
 import { summarizeClaim } from '@/lib/claims';
 
 // GET /api/claims/7 — one claim with its payments and derived numbers

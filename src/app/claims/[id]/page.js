@@ -163,79 +163,33 @@ export default function ClaimDetailPage() {
       {/* Two-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-        {/* Left column — claim info + payment history */}
-        <div className="lg:col-span-3 flex flex-col gap-8">
-          {/* Claim details */}
-          <div className="bg-white/50 rounded-xl border p-5 sm:p-6" style={{ borderColor: 'var(--color-line)' }}>
-            <h2 className="text-xs font-bold uppercase tracking-wide mb-4" style={{ color: 'var(--color-ink-muted)' }}>Claim details</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 text-sm">
-              <div>
-                <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Loss nature</div>
-                <div className="font-medium">{claim.loss_nature}</div>
-              </div>
-              <div>
-                <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Loss date</div>
-                <div className="font-mono-figures">{claim.loss_date}</div>
-              </div>
-              <div>
-                <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Notified</div>
-                <div className="font-mono-figures">{claim.notified_date}</div>
-              </div>
+        {/* Claim details */}
+        <div className="order-1 lg:col-span-3 bg-white/50 rounded-xl border p-5 sm:p-6" style={{ borderColor: 'var(--color-line)' }}>
+          <h2 className="text-xs font-bold uppercase tracking-wide mb-4" style={{ color: 'var(--color-ink-muted)' }}>Claim details</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 text-sm">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Loss nature</div>
+              <div className="font-medium">{claim.loss_nature}</div>
+            </div>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Loss date</div>
+              <div className="font-mono-figures">{claim.loss_date}</div>
+            </div>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Notified</div>
+              <div className="font-mono-figures">{claim.notified_date}</div>
             </div>
           </div>
-
-          {/* Payment history */}
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-serif-display text-lg">
-                Payment history{payments.length > 0 && <span className="ml-1.5 text-sm font-bold" style={{ color: 'var(--color-accent)' }}>({payments.length})</span>}
-              </h2>
-              <button onClick={() => setPaymentModalOpen(true)} className="text-sm font-bold cursor-pointer hover:underline transition-colors" style={{ color: 'var(--color-accent)' }}>+ Add Payment</button>
-            </div>
-            {payments.length === 0 ? (
-              <div className="text-center py-10 bg-white/30 rounded-xl border" style={{ borderColor: 'var(--color-line)' }}>
-                <p className="text-base font-medium mb-1" style={{ color: 'var(--color-ink)' }}>No payments yet</p>
-                <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>Payments will appear here once recorded.</p>
-              </div>
-            ) : (
-              <div className="bg-white/50 rounded-xl border overflow-hidden" style={{ borderColor: 'var(--color-line)' }}>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr style={{ backgroundColor: 'rgba(0,0,0,0.02)' }}>
-                        <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Date</th>
-                        <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Ccy</th>
-                        <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Amount</th>
-                        <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Rate</th>
-                        <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Converted</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {payments.map((p) => (
-                        <tr key={p.id} className="border-t transition-colors" style={{ borderColor: 'var(--color-line)' }}>
-                          <td className="py-3 px-4 font-mono-figures">{p.payment_date}</td>
-                          <td className="py-3 px-4">
-                            <span className="inline-block text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(15, 146, 103, 0.08)', color: 'var(--color-accent)' }}>{p.currency}</span>
-                          </td>
-                          <td className="py-3 px-4 text-center font-mono-figures">{formatMinor(p.amount_minor)}</td>
-                          <td className="py-3 px-4 text-center font-mono-figures">{p.fx_rate}</td>
-                          <td className="py-3 px-4 text-center font-mono-figures font-medium">{formatMinor(p.converted_amount_minor)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-            {paymentNote && <p className="text-sm font-medium mt-3" style={{ color: 'var(--color-status-outstanding)' }}>{paymentNote}</p>}
-          </section>
         </div>
-        {/* Right column — financials + actions */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          {/* Financial summary */}
-          <div className="bg-white/50 rounded-xl border p-5" style={{ borderColor: 'var(--color-line)' }}>
+
+        {/* Financial summary */}
+        <div className="order-2 lg:col-span-2 lg:col-start-4 bg-white/50 rounded-xl border p-5" style={{ borderColor: 'var(--color-line)' }}>
             <h2 className="text-xs font-semibold uppercase tracking-wide mb-4" style={{ color: 'var(--color-ink-muted)' }}>Financial summary</h2>
             <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Est. loss</div>
+                <div className="font-mono-figures text-lg font-medium">{formatMinor(claim.estimated_loss_minor)}</div>
+              </div>
               <div>
                 <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Currency</div>
                 <div className="font-mono-figures text-lg font-medium">{claim.currency}</div>
@@ -248,15 +202,15 @@ export default function ClaimDetailPage() {
                 <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-ink-muted)' }}>Paid</div>
                 <div className="font-mono-figures text-lg" style={{ color: 'var(--color-status-paid)' }}>{formatMinor(claim.totalPaidMinor)}</div>
               </div>
-              <div className="rounded-lg p-3 -m-1" style={{ backgroundColor: claim.balanceMinor > 0 ? 'rgba(217, 119, 6, 0.06)' : 'rgba(15, 146, 103, 0.06)' }}>
+              <div className="col-span-2 rounded-lg p-3 -m-1" style={{ backgroundColor: claim.balanceMinor > 0 ? 'rgba(217, 119, 6, 0.06)' : 'rgba(15, 146, 103, 0.06)' }}>
                 <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: claim.balanceMinor > 0 ? 'var(--color-status-outstanding)' : 'var(--color-status-paid)' }}>Balance</div>
                 <div className="font-mono-figures text-lg font-bold" style={{ color: claim.balanceMinor > 0 ? 'var(--color-status-outstanding)' : 'var(--color-status-paid)' }}>{formatMinor(claim.balanceMinor)}</div>
               </div>
             </div>
-          </div>
+        </div>
 
-          {/* Set approved amount */}
-          <section className="bg-white/50 rounded-xl border p-5" style={{ borderColor: 'var(--color-line)' }}>
+        {/* Set approved amount */}
+        <section className="order-3 lg:col-span-2 lg:col-start-4 bg-white/50 rounded-xl border p-5" style={{ borderColor: 'var(--color-line)' }}>
             <h2 className="text-xs font-semibold uppercase tracking-wide mb-4" style={{ color: 'var(--color-ink-muted)' }}>{claim.approved_amount_minor != null ? 'Update approved amount' : 'Set approved amount'}</h2>
             <form onSubmit={handleSetApproved} className="flex gap-3 items-end">
               <div className="flex-1">
@@ -275,8 +229,53 @@ export default function ClaimDetailPage() {
               </button>
             </form>
             {approvedError && <p className="text-sm mt-3 font-medium" style={{ color: 'var(--color-error)' }}>{approvedError}</p>}
-          </section>
-        </div>
+        </section>
+
+        {/* Payment history */}
+        <section className="order-4 lg:col-span-3 lg:row-start-2">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-serif-display text-lg">
+              Payment history{payments.length > 0 && <span className="ml-1.5 text-sm font-bold" style={{ color: 'var(--color-accent)' }}>({payments.length})</span>}
+            </h2>
+            <button onClick={() => setPaymentModalOpen(true)} className="text-sm font-bold cursor-pointer hover:underline transition-colors" style={{ color: 'var(--color-accent)' }}>+ Add Payment</button>
+          </div>
+          {payments.length === 0 ? (
+            <div className="text-center py-10 bg-white/30 rounded-xl border" style={{ borderColor: 'var(--color-line)' }}>
+              <p className="text-base font-medium mb-1" style={{ color: 'var(--color-ink)' }}>No payments yet</p>
+              <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>Payments will appear here once recorded.</p>
+            </div>
+          ) : (
+            <div className="bg-white/50 rounded-xl border overflow-hidden" style={{ borderColor: 'var(--color-line)' }}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr style={{ backgroundColor: 'rgba(0,0,0,0.02)' }}>
+                      <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Date</th>
+                      <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Ccy</th>
+                      <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Amount</th>
+                      <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Rate</th>
+                      <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Converted</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payments.map((p) => (
+                      <tr key={p.id} className="border-t transition-colors" style={{ borderColor: 'var(--color-line)' }}>
+                        <td className="py-3 px-4 font-mono-figures">{p.payment_date}</td>
+                        <td className="py-3 px-4">
+                          <span className="inline-block text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(15, 146, 103, 0.08)', color: 'var(--color-accent)' }}>{p.currency}</span>
+                        </td>
+                        <td className="py-3 px-4 text-center font-mono-figures">{formatMinor(p.amount_minor)}</td>
+                        <td className="py-3 px-4 text-center font-mono-figures">{p.fx_rate}</td>
+                        <td className="py-3 px-4 text-center font-mono-figures font-medium">{formatMinor(p.converted_amount_minor)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          {paymentNote && <p className="text-sm font-medium mt-3" style={{ color: 'var(--color-status-outstanding)' }}>{paymentNote}</p>}
+        </section>
       </div>
 
       <Modal open={paymentModalOpen} onClose={() => setPaymentModalOpen(false)} title="Record a payment">
@@ -284,6 +283,7 @@ export default function ClaimDetailPage() {
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Date</label>
             <input type="date" placeholder="mm/dd/yyyy" max={new Date().toISOString().split('T')[0]} value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} className="bg-white/60 border rounded-lg px-3 py-2 text-sm w-full cursor-pointer focus:outline-none transition-colors" style={{ borderColor: 'var(--color-line)' }} />
+            <span className="block text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Pick a date</span>
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--color-ink-muted)' }}>Currency</label>

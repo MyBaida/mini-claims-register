@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAllClaims, getPaymentsForClaim, insertClaim } from '@/lib/data';
+import { getAllClaims, getPaymentsForClaim, insertClaim } from '@/lib/queries';
 import { summarizeClaim, groupTotalsByCurrency } from '@/lib/claims';
 import { SUPPORTED_CURRENCIES } from '@/lib/currencies';
 

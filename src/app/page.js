@@ -119,10 +119,12 @@ export default function ClaimsListPage() {
           <div>
             <label className="block mb-1.5 text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--color-ink-muted)' }}>From</label>
             <input type="date" placeholder="mm/dd/yyyy" value={filters.from} onChange={(e) => updateFilter('from', e.target.value)} className={filterInput} style={filterStyle} />
+            <span className="block text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Pick a date</span>
           </div>
           <div>
             <label className="block mb-1.5 text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--color-ink-muted)' }}>To</label>
             <input type="date" placeholder="mm/dd/yyyy" value={filters.to} onChange={(e) => updateFilter('to', e.target.value)} className={filterInput} style={filterStyle} />
+            <span className="block text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Pick a date</span>
           </div>
           <div>
             <label className="block mb-1.5 text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--color-ink-muted)' }}>Status</label>
@@ -167,7 +169,7 @@ export default function ClaimsListPage() {
                   <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Policy</th>
                   <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Insured</th>
                   <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider hidden sm:table-cell" style={{ color: 'var(--color-ink-muted)' }}>Loss date</th>
-                  <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Currency</th>
+                  <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Currency</th>
                   <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Approved</th>
                   <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider hidden sm:table-cell" style={{ color: 'var(--color-ink-muted)' }}>Paid</th>
                   <th className="py-3 px-4 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Balance</th>
@@ -186,7 +188,7 @@ export default function ClaimsListPage() {
                     </td>
                     <td className="py-3 px-4">{claim.insured_name}</td>
                     <td className="py-3 px-4 font-mono-figures hidden sm:table-cell">{claim.loss_date}</td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 text-center">
                       <span className="inline-block text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(15, 146, 103, 0.08)', color: 'var(--color-accent)' }}>{claim.currency}</span>
                     </td>
                     <td className="py-3 px-4 text-center font-mono-figures">{formatMinor(claim.approved_amount_minor)}</td>

@@ -10,7 +10,7 @@
     "lint": "eslint",
     "db:init": "node scripts/init-db.js",
     "db:seed": "node scripts/seed.js",
-    "test": "node --test src/lib/claims.test.js",
+    "test": "node --test src/lib/tests/*.test.js",
     "render-start": "node scripts/start.js"
   },
   "dependencies": {

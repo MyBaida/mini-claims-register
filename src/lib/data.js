@@ -1,18 +1,21 @@
-import db from './db.js';
+// Pure data-access functions that accept a database instance.
+// This keeps the query logic testable with any better-sqlite3 database
+// (production file, in-memory test db, etc.).
+// For the live app, src/lib/queries.js binds these to the real database.
 
-export function getAllClaims() {
+export function getAllClaims(db) {
   return db.prepare('SELECT * FROM claims ORDER BY loss_date DESC').all();
 }
 
-export function getClaimById(id) {
+export function getClaimById(db, id) {
   return db.prepare('SELECT * FROM claims WHERE id = ?').get(id);
 }
 
-export function getPaymentsForClaim(claimId) {
+export function getPaymentsForClaim(db, claimId) {
   return db.prepare('SELECT * FROM payments WHERE claim_id = ? ORDER BY payment_date ASC').all(claimId);
 }
 
-export function insertClaim(data) {
+export function insertClaim(db, data) {
   const stmt = db.prepare(`
     INSERT INTO claims (policy_number, insured_name, loss_date, notified_date, loss_nature, currency, estimated_loss_minor, approved_amount_minor)
     VALUES (@policy_number, @insured_name, @loss_date, @notified_date, @loss_nature, @currency, @estimated_loss_minor, @approved_amount_minor)
@@ -21,11 +24,11 @@ export function insertClaim(data) {
   return result.lastInsertRowid;
 }
 
-export function updateApprovedAmount(id, approvedAmountMinor) {
+export function updateApprovedAmount(db, id, approvedAmountMinor) {
   db.prepare('UPDATE claims SET approved_amount_minor = ? WHERE id = ?').run(approvedAmountMinor, id);
 }
 
-export function insertPayment(data) {
+export function insertPayment(db, data) {
   const stmt = db.prepare(`
     INSERT INTO payments (claim_id, payment_date, currency, amount_minor, fx_rate, converted_amount_minor)
     VALUES (@claim_id, @payment_date, @currency, @amount_minor, @fx_rate, @converted_amount_minor)
