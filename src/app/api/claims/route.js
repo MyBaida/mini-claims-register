@@ -49,13 +49,13 @@ export async function POST(request) {
     }
   }
 
-  if (!/^[A-Za-z0-9\s.\-']+$/.test(body.policy_number)) {
+  if (!/^[\p{L}0-9\s.\-']+$/.test(body.policy_number)) {
     return NextResponse.json({ error: 'policy_number can only contain letters, numbers, hyphens, and periods' }, { status: 400 });
   }
-  if (!/^[A-Za-z\s'.\-]+$/.test(body.insured_name)) {
+  if (!/^[\p{L}\s'.\-]+$/u.test(body.insured_name)) {
     return NextResponse.json({ error: 'insured_name can only contain letters, spaces, hyphens, and apostrophes' }, { status: 400 });
   }
-  if (!/[a-zA-Z]/.test(body.loss_nature) || !/^[A-Za-z0-9\s.,'\-]+$/.test(body.loss_nature)) {
+  if (!/\p{L}/u.test(body.loss_nature) || !/^[\p{L}0-9\s.,'\-]+$/u.test(body.loss_nature)) {
     return NextResponse.json({ error: 'loss_nature must contain letters and can only include letters, numbers, and basic punctuation' }, { status: 400 });
   }
 
