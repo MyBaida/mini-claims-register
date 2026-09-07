@@ -49,6 +49,16 @@ export async function POST(request) {
     }
   }
 
+  if (!/^[A-Za-z0-9\s.\-']+$/.test(body.policy_number)) {
+    return NextResponse.json({ error: 'policy_number can only contain letters, numbers, hyphens, and periods' }, { status: 400 });
+  }
+  if (!/^[A-Za-z\s'.\-]+$/.test(body.insured_name)) {
+    return NextResponse.json({ error: 'insured_name can only contain letters, spaces, hyphens, and apostrophes' }, { status: 400 });
+  }
+  if (!/[a-zA-Z]/.test(body.loss_nature) || !/^[A-Za-z0-9\s.,'\-]+$/.test(body.loss_nature)) {
+    return NextResponse.json({ error: 'loss_nature must contain letters and can only include letters, numbers, and basic punctuation' }, { status: 400 });
+  }
+
   if (!SUPPORTED_CURRENCIES.includes(body.currency)) {
     return NextResponse.json(
       { error: `currency must be one of ${SUPPORTED_CURRENCIES.join(', ')}` },

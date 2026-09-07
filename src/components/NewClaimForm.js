@@ -27,6 +27,16 @@ export default function NewClaimForm({ onSuccess, onCancel }) {
       if (!form[field]) { setError('All fields are required'); return; }
     }
 
+    if (!/^[A-Za-z0-9\s.\-']+$/.test(form.policy_number)) {
+      setError('Policy number can only contain letters, numbers, hyphens, and periods'); return;
+    }
+    if (!/^[A-Za-z\s'.\-]+$/.test(form.insured_name)) {
+      setError('Insured name can only contain letters, spaces, hyphens, and apostrophes'); return;
+    }
+    if (!/[a-zA-Z]/.test(form.loss_nature) || !/^[A-Za-z0-9\s.,'\-]+$/.test(form.loss_nature)) {
+      setError('Loss nature must contain letters and can only include letters, numbers, and basic punctuation'); return;
+    }
+
     const estimatedMinor = Math.round(parseFloat(form.estimated_loss) * 100);
     if (isNaN(estimatedMinor)) { setError('Estimated loss must be a valid number'); return; }
 
