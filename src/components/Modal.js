@@ -7,8 +7,14 @@ export default function Modal({ open, onClose, title, children }) {
     function handleKey(e) {
       if (e.key === 'Escape') onClose();
     }
-    if (open) document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    if (open) {
+      document.addEventListener('keydown', handleKey);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      document.body.style.overflow = '';
+    };
   }, [open, onClose]);
 
   if (!open) return null;

@@ -27,7 +27,7 @@ export default function NewClaimForm({ onSuccess, onCancel }) {
       if (!form[field]) { setError('All fields are required'); return; }
     }
 
-    if (!/^[\p{L}0-9\s.\-']+$/.test(form.policy_number)) {
+    if (!/^[\p{L}0-9\s.\-']+$/u.test(form.policy_number)) {
       setError('Policy number can only contain letters, numbers, hyphens, and periods'); return;
     }
     if (!/^[\p{L}\s'.\-]+$/u.test(form.insured_name)) {

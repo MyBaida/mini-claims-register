@@ -49,7 +49,7 @@ export async function POST(request) {
     }
   }
 
-  if (!/^[\p{L}0-9\s.\-']+$/.test(body.policy_number)) {
+  if (!/^[\p{L}0-9\s.\-']+$/u.test(body.policy_number)) {
     return NextResponse.json({ error: 'policy_number can only contain letters, numbers, hyphens, and periods' }, { status: 400 });
   }
   if (!/^[\p{L}\s'.\-]+$/u.test(body.insured_name)) {
